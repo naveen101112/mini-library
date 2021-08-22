@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>My First Spring Boot app</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+		integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+		crossorigin="anonymous" />
+		
+	<script>
+		function createRequest(divid) {									
+			var x = document.getElementById(divid);
+            var r = document.getElementById('requests');
+			if (x.style.display == "none") {
+				x.style.display = "block";
+				r.style.display = "none";
+			}
+			else {
+				x.style.display = "none";
+				r.style.display = "block";
+			}
+		}
+		
+	</script>
+		
+</head>
+
+<body>
+	<!-- create navigation bar ( header) -->
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+					aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#" th:href="@{/}">Registration and
+					Login Module</a>
+			</div>
+			<div id="navbar" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<br>
+	<br>
+
+	<div class="container">
+		<h1></h1>
+		Welcome <span sec:authentication="principal.username"> User</span>
+		<a th:href="@{defect-details}">click Here to happy View the Menu</a>
+
+		<div class="requests-section" id='requests'>
+			<div style="display: flex;justify-content: space-between;padding: 22px 0px 19px 1px;">
+				<h4 style="font-weight: bold;">Manage My Requests:</h4>
+				<button type="button" class="btn btn-primary" onclick="createRequest('create-request')">Create New Request</button>
+			</div>
+			
+			<table class="table pt-4"  th:if="${not #lists.isEmpty(listRequests)}">
+				<thead>
+					<tr>
+						<th scope="col">Request Id</th>
+						<th scope="col">Request For</th>
+						<th scope="col">Description</th>
+						<th scope="col">Department</th>
+						<th scope="col">Status</th>
+						<th scope="col">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="request : ${listRequests}">
+						<td th:text="${request.id}"></td>
+						<td th:text="${request.request_for}"></td>
+						<td th:text="${request.descr}"></td>
+						<td th:text="${request.dept_id}"></td>
+						<td th:text="${request.status}"></td>
+						<td><i class="fas fa-edit"></i> <i class="fa fa-trash" aria-hidden="true"></i>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</div>
+		<div class="create-request" id='create-request' style="display: none;margin-top: 3rem;">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+	
+					<!-- success message -->
+					<div th:if="${param.success}">
+						<div class="alert alert-info">You've successfully Raised Request</div>
+					</div>
+	
+					<h1>Create Request</h1>
+	
+					<form th:action="@{/raiseRequest}" method="post" th:object="${user}">
+						<div class="form-group">
+							<label class="control-label" for="request_for">Request For</label>
+							<input id="request_for" name="request_for" class="form-control" 
+								required autofocus="autofocus" />
+						</div>
+	
+						<div class="form-group">
+							<label class="control-label" for="description">Description </label>
+								<textarea class="form-control" required autofocus="autofocus"  rows="5" id="description" name="descr"> </textarea>
+
+						</div>
+	
+						<div class="form-group">
+							<label for="sel1">Department list list:</label>
+							<select class="form-control" id="sel1" name="dept_id">
+							  <option>1</option>
+							  <option>2</option>
+							  <option>3</option>
+							  <option>4</option>
+							</select>
+						  </div>
+						  
+					    <div class="form-group">
+							<input class="form-control" type='hidden' value=principal.username name="email" id="email">
+						</div>
+	
+						<div class="form-group" style="display: flex;justify-content: space-evenly;margin-top: 2rem;">
+							<button type="button" class="btn btn-danger" onclick="createRequest('create-request')" style="width: 150px;">Cancel</button>
+							<button type="submit" class="btn btn-success" style="width: 150px;">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
